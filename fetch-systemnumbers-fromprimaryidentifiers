@@ -1,0 +1,25 @@
+# this script made it easier to compare Alma and Aleph user data during our migration
+# Alma Analytics is very nice but the system identifier is not included in the
+# cash data repository, and we needed it to compare how our fee/fine data migrated
+
+
+import json
+import requests
+
+file = open('alma_primaryids_hasfines.txt', 'r')
+output_file = open('alma_sysids.txt', 'a')
+
+baseUrl = "https://api-na.hosted.exlibrisgroup.com/almaws/v1/users?apikey=[INSERTAPIKEY]&expand=full&format=json&q=primary_id~"
+
+for line in file:
+    urlGet = '{}{}'.format(baseUrl, line)
+    r = requests.get(urlGet)
+    userRecord = r.json()
+    for each in userRecord['user']:
+        for a in each['user_identifier']:
+            if a['id_type']['value'] == '00':
+                output_file.write(a['value'])
+                output_file.write('\n')
+
+file.close()
+output_file.close()
