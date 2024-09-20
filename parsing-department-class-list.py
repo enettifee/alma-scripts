@@ -5,18 +5,19 @@ from the OIT Streamer curriculum API.
 
 import json
 import pandas as pd
+import requests
 
-# Load the JSON data from the file
-with open('cultural-anthropology.json', 'r') as file:
-    data = json.load(file)
+# request department list from streamer
 
-# Extract the course summaries
-course_summaries = data['ssr_get_courses_resp']['course_search_result']['subjects']['subject']['course_summaries']['course_summary']
+departmentlistApi = "https://streamer.oit.duke.edu/curriculum/list_of_values/fieldname/SUBJECT?access_token=[INSERTAPIKEY]"
 
-# Convert the course summaries to a DataFrame
-df = pd.DataFrame(course_summaries)
+r = requests.get(departmentlistApi)
+data = r.json()
 
-# Save the DataFrame to a text file in tabular format
-df.to_csv('cultural_anthropology_courses.txt', sep='\t', index=False)
+# Extract the department info
+department_info = data['scc_lov_resp']['lovs']['lov']['values']['value']
 
-print("The JSON data has been converted to tabular format and saved to 'cultural_anthropology_courses.txt'.")
+# Convert the department info to a data frame
+df = pd.DataFrame(department_info)
+
+print(df)
